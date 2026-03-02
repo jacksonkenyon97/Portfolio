@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Applied AI Portfolio | MSc Applied Artificial Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1814;
+    --ink-soft: #3d3830;
+    --ink-muted: #7a7266;
+    --paper: #f5f0e8;
+    --paper-warm: #ede8dd;
+    --paper-dark: #e0d9cc;
+    --gold: #b8963e;
+    --gold-light: #d4b06a;
+    --gold-pale: #f0e5c8;
+    --accent: #2c4a6e;
+    --accent-light: #4a7aaa;
+    --rule: rgba(26,24,20,0.12);
+    --rule-strong: rgba(26,24,20,0.25);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'EB Garamond', Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+    font-size: 18px;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(245,240,232,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule-strong);
+  }
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  .nav-brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    text-decoration: none;
+  }
+  .nav-brand span {
+    color: var(--gold);
+  }
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 4rem 6rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .hero-superscript {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-superscript::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+  }
+  .hero-name {
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 500;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.35s forwards;
+  }
+  .hero-title {
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    font-style: italic;
+    color: var(--ink-muted);
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.5s forwards;
+  }
+  .hero-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--rule-strong), transparent);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.65s forwards;
+  }
+  .hero-bio-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.8s forwards;
+  }
+  .hero-bio {
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+    line-height: 1.8;
+  }
+  .hero-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
+  }
+  .meta-item {
+    display: flex;
+    gap: 1.2rem;
+    align-items: baseline;
+  }
+  .meta-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    min-width: 90px;
+  }
+  .meta-value {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+  }
+  .hero-scroll-indicator {
+    position: absolute;
+    right: 4rem;
+    bottom: 6rem;
+    writing-mode: vertical-rl;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    opacity: 0;
+    animation: fadeIn 1s 1.2s forwards;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .hero-scroll-indicator::after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--ink-muted), transparent);
+    animation: scrollLine 2s 1.5s ease-in-out infinite;
+  }
+
+  /* ── SECTION COMMON ── */
+  section {
+    padding: 8rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 2rem;
+    margin-bottom: 4rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rule-strong);
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .section-title {
+    font-size: 2.2rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── SKILLS ── */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--rule);
+  }
+  .skill-category {
+    background: var(--paper);
+    padding: 2.5rem 2rem;
+  }
+  .skill-category-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+  }
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .skill-tag {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--rule-strong);
+    color: var(--ink-soft);
+    background: var(--paper-warm);
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+  .skill-tag:hover {
+    background: var(--gold-pale);
+    border-color: var(--gold);
+    color: var(--ink);
+  }
+
+  /* ── PROJECTS ── */
+  .projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .project-card {
+    border-top: 1px solid var(--rule);
+    padding: 3rem 0;
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 2.5rem;
+    align-items: start;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+  }
+  .project-card:last-child { border-bottom: 1px solid var(--rule); }
+  .project-card:hover { background: rgba(184,150,62,0.04); }
+  .project-card:hover .project-arrow { opacity: 1; transform: translateX(0); }
+  .project-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    padding-top: 0.4rem;
+  }
+  .project-body { flex: 1; }
+  .project-tags {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+    flex-wrap: wrap;
+  }
+  .project-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(44,74,110,0.08);
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+  }
+  .project-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 0.6rem;
+    letter-spacing: -0.01em;
+  }
+  .project-desc {
+    font-size: 1rem;
+    color: var(--ink-muted);
+    line-height: 1.7;
+    max-width: 65ch;
+    margin-bottom: 1.2rem;
+  }
+  .project-actions {
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+  }
+  .btn-view {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.55rem 1.4rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    cursor: pointer;
+    border-radius: 2px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s;
+  }
+  .btn-view:hover { background: var(--accent); }
+  .btn-outline {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.55rem 1.4rem;
+    background: transparent;
+    color: var(--ink-muted);
+    border: 1px solid var(--rule-strong);
+    cursor: pointer;
+    border-radius: 2px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--ink); color: var(--ink); }
+  .project-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    align-items: flex-end;
+    min-width: 140px;
+  }
+  .metric {
+    text-align: right;
+  }
+  .metric-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .metric-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .project-arrow {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateX(-8px);
+    opacity: 0;
+    transition: all 0.25s;
+    font-size: 1.2rem;
+    color: var(--gold);
+  }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26,24,20,0.7);
+    z-index: 200;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    overflow-y: auto;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .modal {
+    background: var(--paper);
+    max-width: 860px;
+    width: 100%;
+    margin: auto;
+    border: 1px solid var(--rule-strong);
+    transform: translateY(24px);
+    transition: transform 0.3s;
+  }
+  .modal-overlay.open .modal {
+    transform: translateY(0);
+  }
+  .modal-header {
+    padding: 2.5rem 3rem;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--ink-muted);
+    line-height: 1;
+    padding: 0.2rem;
+  }
+  .modal-body {
+    padding: 3rem;
+  }
+  .modal-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+  }
+  .modal-section-label:first-child { margin-top: 0; }
+  .notebook-viewer {
+    background: #1e1e1e;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+  }
+  .notebook-toolbar {
+    background: #2d2d2d;
+    padding: 0.6rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .nb-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .nb-dot.red { background: #ff5f56; }
+  .nb-dot.yellow { background: #ffbd2e; }
+  .nb-dot.green { background: #27c93f; }
+  .nb-filename {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: #888;
+    margin-left: 0.5rem;
+  }
+  .nb-cell {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .nb-cell-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: #555;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.1em;
+  }
+  .nb-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: #d4d4d4;
+    line-height: 1.6;
+    white-space: pre;
+    overflow-x: auto;
+  }
+  .nb-code .kw { color: #569cd6; }
+  .nb-code .fn { color: #dcdcaa; }
+  .nb-code .str { color: #ce9178; }
+  .nb-code .cm { color: #6a9955; }
+  .nb-code .num { color: #b5cea8; }
+  .nb-output {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #a8a8a8;
+    line-height: 1.5;
+    background: #252525;
+    padding: 0.8rem 1.5rem;
+  }
+  .output-metric-row {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem 1.5rem;
+    background: #252525;
+  }
+  .output-metric {
+    text-align: center;
+  }
+  .output-metric-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.4rem;
+    color: #4ec9b0;
+    line-height: 1;
+  }
+  .output-metric-lbl {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #666;
+    margin-top: 0.2rem;
+  }
+  .modal-summary {
+    font-size: 1rem;
+    color: var(--ink-soft);
+    line-height: 1.8;
+    background: var(--paper-warm);
+    border-left: 3px solid var(--gold);
+    padding: 1.5rem 2rem;
+    margin-top: 0.5rem;
+  }
+
+  /* ── ABOUT ── */
+  .about-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: start;
+  }
+  .about-text p {
+    margin-bottom: 1.2rem;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+  }
+  .about-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .aside-block {
+    padding: 2rem;
+    background: var(--paper-warm);
+    border: 1px solid var(--rule);
+  }
+  .aside-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+  .aside-content {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+  .cv-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.9rem 2rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s;
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+  .cv-btn:hover { background: var(--accent); }
+
+  /* ── CONTACT ── */
+  #contact {
+    background: var(--paper-warm);
+    border-top: 1px solid var(--rule-strong);
+    border-bottom: 1px solid var(--rule-strong);
+    max-width: 100%;
+  }
+  .contact-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 8rem 4rem;
+  }
+  .contact-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    margin-top: 4rem;
+  }
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .form-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .form-input, .form-textarea {
+    font-family: 'EB Garamond', serif;
+    font-size: 1rem;
+    padding: 0.8rem 1rem;
+    background: var(--paper);
+    border: 1px solid var(--rule-strong);
+    color: var(--ink);
+    border-radius: 2px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-input:focus, .form-textarea:focus {
+    border-color: var(--gold);
+  }
+  .form-textarea { min-height: 130px; resize: vertical; }
+  .form-submit {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.9rem 2rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.2s;
+    align-self: flex-start;
+  }
+  .form-submit:hover { background: var(--accent); }
+  .social-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .social-link {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.2rem 1.5rem;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    text-decoration: none;
+    color: var(--ink);
+    transition: all 0.2s;
+    border-radius: 2px;
+  }
+  .social-link:hover { border-color: var(--gold); background: var(--gold-pale); }
+  .social-icon {
+    font-size: 1.2rem;
+    width: 28px;
+    text-align: center;
+  }
+  .social-info { flex: 1; }
+  .social-platform {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .social-handle {
+    font-size: 0.88rem;
+    color: var(--ink-muted);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 3rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-muted);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 0.6; }
+  }
+  @keyframes scrollLine {
+    0%, 100% { transform: scaleY(1); transform-origin: top; }
+    50% { transform: scaleY(0.4); }
+  }
+
+  /* ── INTERSECTION OBSERVER ANIMATIONS ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 900px) {
+    section { padding: 5rem 2rem; }
+    .hero { padding: 0 2rem 5rem; }
+    .hero-bio-row { grid-template-columns: 1fr; gap: 2rem; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .project-card { grid-template-columns: 40px 1fr; }
+    .project-metrics { display: none; }
+    .about-layout, .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
+    .contact-inner { padding: 5rem 2rem; }
+    footer { padding: 2rem; flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="#"><span>//</span> AI Portfolio</a>
+    <ul class="nav-links">
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div style="max-width:1200px;margin:0 auto">
+<div class="hero">
+  <div class="hero-superscript">MSc Applied Artificial Intelligence</div>
+  <h1 class="hero-name">Your Name</h1>
+  <p class="hero-title">Applied AI Researcher &amp; Machine Learning Engineer</p>
+  <div class="hero-divider"></div>
+  <div class="hero-bio-row">
+    <p class="hero-bio">
+      A collection of research projects, experiments, and applied models developed throughout my Masters in Applied Artificial Intelligence. Each project explores a distinct problem domain, from natural language understanding to computer vision and reinforcement learning.
+    </p>
+    <div class="hero-meta">
+      <div class="meta-item">
+        <span class="meta-label">Degree</span>
+        <span class="meta-value">MSc Applied AI</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">University</span>
+        <span class="meta-value">Your University</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Year</span>
+        <span class="meta-value">2024 – 2025</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Stack</span>
+        <span class="meta-value">Python · PyTorch · HuggingFace</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll-indicator">Scroll</div>
+</div>
+</div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header reveal">
+    <span class="section-num">01 — Skills &amp; Tools</span>
+    <h2 class="section-title">Technical Competencies</h2>
+  </div>
+  <div class="skills-grid reveal">
+    <div class="skill-category">
+      <div class="skill-category-label">Frameworks &amp; Libraries</div>
+      <div class="skill-tags">
+        <span class="skill-tag">PyTorch</span>
+        <span class="skill-tag">TensorFlow</span>
+        <span class="skill-tag">scikit-learn</span>
+        <span class="skill-tag">HuggingFace</span>
+        <span class="skill-tag">Keras</span>
+        <span class="skill-tag">OpenCV</span>
+        <span class="skill-tag">spaCy</span>
+        <span class="skill-tag">NLTK</span>
+      </div>
+    </div>
+    <div class="skill-category">
+      <div class="skill-category-label">Methods &amp; Architectures</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Transformers</span>
+        <span class="skill-tag">CNNs</span>
+        <span class="skill-tag">LSTMs</span>
+        <span class="skill-tag">Reinforcement Learning</span>
+        <span class="skill-tag">GANs</span>
+        <span class="skill-tag">Fine-tuning LLMs</span>
+        <span class="skill-tag">Transfer Learning</span>
+        <span class="skill-tag">Bayesian Methods</span>
+      </div>
+    </div>
+    <div class="skill-category">
+      <div class="skill-category-label">Tools &amp; Environment</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Python</span>
+        <span class="skill-tag">Jupyter</span>
+        <span class="skill-tag">Git</span>
+        <span class="skill-tag">Docker</span>
+        <span class="skill-tag">Pandas</span>
+        <span class="skill-tag">NumPy</span>
+        <span class="skill-tag">Weights &amp; Biases</span>
+        <span class="skill-tag">Google Colab</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" style="border-top: 1px solid var(--rule-strong);">
+  <div class="section-header reveal">
+    <span class="section-num">02 — Projects</span>
+    <h2 class="section-title">Research &amp; Applied Work</h2>
+  </div>
+  <div class="projects-list">
+
+    <!-- PROJECT 1 -->
+    <div class="project-card reveal" onclick="openModal('proj1')">
+      <div class="project-num">01</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="project-tag">NLP</span>
+          <span class="project-tag">Transformers</span>
+          <span class="project-tag">Classification</span>
+        </div>
+        <h3 class="project-title">Sentiment Analysis with Fine-tuned BERT</h3>
+        <p class="project-desc">Fine-tuned a pre-trained BERT model on a domain-specific dataset to classify sentiment at sentence level, achieving state-of-the-art results on the benchmark test set.</p>
+        <div class="project-actions">
+          <button class="btn-view" onclick="event.stopPropagation(); openModal('proj1')">View Notebook</button>
+          <a href="#" class="btn-outline" onclick="event.stopPropagation()">Download .ipynb</a>
+        </div>
+      </div>
+      <div class="project-metrics">
+        <div class="metric">
+          <div class="metric-value">94.2%</div>
+          <div class="metric-label">Accuracy</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value">F1 0.93</div>
+          <div class="metric-label">F1 Score</div>
+        </div>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <!-- PROJECT 2 -->
+    <div class="project-card reveal" onclick="openModal('proj2')">
+      <div class="project-num">02</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="project-tag">Computer Vision</span>
+          <span class="project-tag">CNN</span>
+          <span class="project-tag">ResNet</span>
+        </div>
+        <h3 class="project-title">Medical Image Classification with Transfer Learning</h3>
+        <p class="project-desc">Applied transfer learning with a ResNet-50 backbone to classify chest X-ray images. Included class activation mapping to interpret model attention regions.</p>
+        <div class="project-actions">
+          <button class="btn-view" onclick="event.stopPropagation(); openModal('proj2')">View Notebook</button>
+          <a href="#" class="btn-outline" onclick="event.stopPropagation()">Download .ipynb</a>
+        </div>
+      </div>
+      <div class="project-metrics">
+        <div class="metric">
+          <div class="metric-value">91.7%</div>
+          <div class="metric-label">Accuracy</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value">AUC 0.96</div>
+          <div class="metric-label">ROC-AUC</div>
+        </div>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <!-- PROJECT 3 -->
+    <div class="project-card reveal" onclick="openModal('proj3')">
+      <div class="project-num">03</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="project-tag">Reinforcement Learning</span>
+          <span class="project-tag">DQN</span>
+          <span class="project-tag">OpenAI Gym</span>
+        </div>
+        <h3 class="project-title">Deep Q-Network Agent for CartPole Environment</h3>
+        <p class="project-desc">Implemented a DQN agent from scratch with experience replay and target networks, training on CartPole-v1 until the agent achieved consistent 500-step episodes.</p>
+        <div class="project-actions">
+          <button class="btn-view" onclick="event.stopPropagation(); openModal('proj3')">View Notebook</button>
+          <a href="#" class="btn-outline" onclick="event.stopPropagation()">Download .ipynb</a>
+        </div>
+      </div>
+      <div class="project-metrics">
+        <div class="metric">
+          <div class="metric-value">500</div>
+          <div class="metric-label">Avg Steps</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value">200ep</div>
+          <div class="metric-label">Convergence</div>
+        </div>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+
+    <!-- PROJECT 4 -->
+    <div class="project-card reveal" onclick="openModal('proj4')">
+      <div class="project-num">04</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="project-tag">Generative AI</span>
+          <span class="project-tag">VAE</span>
+          <span class="project-tag">Latent Space</span>
+        </div>
+        <h3 class="project-title">Variational Autoencoder for Data Generation</h3>
+        <p class="project-desc">Designed and trained a VAE to learn the latent structure of a tabular dataset, enabling generation of realistic synthetic samples for data augmentation purposes.</p>
+        <div class="project-actions">
+          <button class="btn-view" onclick="event.stopPropagation(); openModal('proj4')">View Notebook</button>
+          <a href="#" class="btn-outline" onclick="event.stopPropagation()">Download .ipynb</a>
+        </div>
+      </div>
+      <div class="project-metrics">
+        <div class="metric">
+          <div class="metric-value">0.87</div>
+          <div class="metric-label">FID Score</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value">2D vis</div>
+          <div class="metric-label">Latent Space</div>
+        </div>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" style="border-top: 1px solid var(--rule-strong);">
+  <div class="section-header reveal">
+    <span class="section-num">03 — About</span>
+    <h2 class="section-title">Background &amp; Experience</h2>
+  </div>
+  <div class="about-layout">
+    <div class="about-text reveal">
+      <p>I'm a postgraduate student completing an MSc in Applied Artificial Intelligence, with a research focus on practical machine learning systems and their real-world deployment. My work sits at the intersection of rigorous academic methodology and engineering practicality.</p>
+      <p>Prior to my Masters, I worked in [your background here], which gave me a strong foundation in [relevant domain]. I am particularly interested in applying AI to high-impact domains including healthcare, climate science, and human-computer interaction.</p>
+      <p>My dissertation research investigates [your dissertation topic here], exploring [brief description of your approach and aims].</p>
+      <p>Outside of my studies I contribute to open-source ML tooling and enjoy writing about technical topics on my blog. I am actively seeking research internship and graduate opportunities.</p>
+    </div>
+    <div class="about-aside reveal">
+      <div class="aside-block">
+        <div class="aside-label">Education</div>
+        <div class="aside-content">
+          <strong>MSc Applied Artificial Intelligence</strong><br>
+          Your University · 2024–2025<br><br>
+          <strong>BSc [Your Undergraduate Degree]</strong><br>
+          Your University · 2021–2024
+        </div>
+      </div>
+      <div class="aside-block">
+        <div class="aside-label">Research Interests</div>
+        <div class="aside-content">
+          Natural Language Processing · Computer Vision · Explainable AI · Generative Models · Responsible AI
+        </div>
+      </div>
+      <div class="aside-block">
+        <div class="aside-label">Curriculum Vitae</div>
+        <div class="aside-content" style="margin-bottom:0.8rem">Download a full copy of my academic CV, including publications, coursework, and professional experience.</div>
+        <a href="#" class="cv-btn">
+          <span>↓</span> Download CV (PDF)
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<div id="contact">
+  <div class="contact-inner">
+    <div class="section-header reveal">
+      <span class="section-num">04 — Contact</span>
+      <h2 class="section-title">Get in Touch</h2>
+    </div>
+    <div class="contact-layout">
+      <form class="contact-form reveal" onsubmit="handleSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input class="form-input" type="text" placeholder="Your full name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subject</label>
+          <input class="form-input" type="text" placeholder="Research collaboration, internship, etc.">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-textarea" placeholder="Your message…"></textarea>
+        </div>
+        <button class="form-submit" type="submit">Send Message →</button>
+      </form>
+      <div class="social-links reveal">
+        <a href="https://github.com" target="_blank" class="social-link">
+          <span class="social-icon">⌥</span>
+          <div class="social-info">
+            <div class="social-platform">GitHub</div>
+            <div class="social-handle">github.com/yourusername</div>
+          </div>
+          <span>↗</span>
+        </a>
+        <a href="https://linkedin.com" target="_blank" class="social-link">
+          <span class="social-icon">in</span>
+          <div class="social-info">
+            <div class="social-platform">LinkedIn</div>
+            <div class="social-handle">linkedin.com/in/yourusername</div>
+          </div>
+          <span>↗</span>
+        </a>
+        <a href="https://scholar.google.com" target="_blank" class="social-link">
+          <span class="social-icon">𝒢</span>
+          <div class="social-info">
+            <div class="social-platform">Google Scholar</div>
+            <div class="social-handle">Scholar Profile</div>
+          </div>
+          <span>↗</span>
+        </a>
+        <a href="mailto:you@email.com" class="social-link">
+          <span class="social-icon">@</span>
+          <div class="social-info">
+            <div class="social-platform">Email</div>
+            <div class="social-handle">your@email.com</div>
+          </div>
+          <span>↗</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-note">© 2025 · MSc Applied AI Portfolio</span>
+  <span class="footer-note">Built with HTML · CSS · JS</span>
+</footer>
+
+<!-- ── MODALS ── -->
+
+<!-- Modal: Project 1 -->
+<div class="modal-overlay" id="modal-proj1">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="project-tags" style="margin-bottom:0.5rem">
+          <span class="project-tag">NLP</span>
+          <span class="project-tag">Transformers</span>
+        </div>
+        <h2 style="font-size:1.5rem;font-weight:500">Sentiment Analysis with Fine-tuned BERT</h2>
+      </div>
+      <button class="modal-close" onclick="closeModal('proj1')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section-label">Project Summary</div>
+      <div class="modal-summary">
+        This project fine-tuned <strong>bert-base-uncased</strong> on a domain-specific customer review dataset to perform 3-class sentiment classification (positive, neutral, negative). The model was trained for 4 epochs with a learning rate of 2e-5 and achieved 94.2% accuracy on the held-out test set — a 6.8 point improvement over the TF-IDF + logistic regression baseline.
+      </div>
+
+      <div class="modal-section-label">Notebook Preview</div>
+      <div class="notebook-viewer">
+        <div class="notebook-toolbar">
+          <div class="nb-dot red"></div><div class="nb-dot yellow"></div><div class="nb-dot green"></div>
+          <span class="nb-filename">bert_sentiment.ipynb</span>
+        </div>
+        <div class="nb-cell">
+          <div class="nb-cell-label">In [1] — Imports &amp; Setup</div>
+          <div class="nb-code"><span class="kw">from</span> transformers <span class="kw">import</span> <span class="fn">BertTokenizer</span>, <span class="fn">BertForSequenceClassification</span>
+<span class="kw">from</span> torch.optim <span class="kw">import</span> AdamW
+<span class="kw">import</span> torch
+
+tokenizer = <span class="fn">BertTokenizer</span>.from_pretrained(<span class="str">'bert-base-uncased'</span>)
+model = <span class="fn">BertForSequenceClassification</span>.from_pretrained(
+    <span class="str">'bert-base-uncased'</span>, num_labels=<span class="num">3</span>
+)</div>
+        </div>
+        <div class="nb-cell">
+          <div class="nb-cell-label">In [5] — Training Loop (epoch 4/4)</div>
+          <div class="nb-code"><span class="cm"># Training epoch 4 of 4</span>
+train_loss = <span class="num">0.0</span>
+<span class="kw">for</span> batch <span class="kw">in</span> train_loader:
+    outputs = <span class="fn">model</span>(**batch)
+    loss = outputs.loss
+    loss.<span class="fn">backward</span>()
+    optimizer.<span class="fn">step</span>()
+    train_loss += loss.<span class="fn">item</span>()
+<span class="fn">print</span>(<span class="str">f"Epoch 4 loss: {train_loss/len(train_loader):.4f}"</span>)</div>
+        </div>
+        <div class="nb-output">Epoch 4 loss: 0.0842</div>
+        <div class="nb-cell">
+          <div class="nb-cell-label">Out [8] — Evaluation Results</div>
+        </div>
+        <div class="output-metric-row">
+          <div class="output-metric">
+            <div class="output-metric-val">94.2%</div>
+            <div class="output-metric-lbl">Accuracy</div>
+          </div>
+          <div class="output-metric">
+            <div class="output-metric-val">0.93</div>
+            <div class="output-metric-lbl">F1 (weighted)</div>
+          </div>
+          <div class="output-metric">
+            <div class="output-metric-val">0.91</div>
+            <div class="output-metric-lbl">Precision</div>
+          </div>
+          <div class="output-metric">
+            <div class="output-metric-val">0.94</div>
+            <div class="output-metric-lbl">Recall</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section-label">Key Findings</div>
+      <p style="color:var(--ink-soft);font-size:1rem;line-height:1.8">
+        The fine-tuned BERT model significantly outperformed all baseline approaches. Error analysis revealed that neutral sentiment remains the hardest class to classify correctly, with many neutral samples being predicted as either positive or negative — a common challenge in sentiment tasks. Future work could explore aspect-based sentiment analysis to handle mixed-polarity reviews.
+      </p>
+
+      <div style="display:flex;gap:1rem;margin-top:2rem">
+        <a href="#" class="btn-view">Download .ipynb</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Project 2 -->
+<div class="modal-overlay" id="modal-proj2">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="project-tags" style="margin-bottom:0.5rem">
+          <span class="project-tag">Computer Vision</span>
+          <span class="project-tag">ResNet</span>
+        </div>
+        <h2 style="font-size:1.5rem;font-weight:500">Medical Image Classification with Transfer Learning</h2>
+      </div>
+      <button class="modal-close" onclick="closeModal('proj2')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section-label">Project Summary</div>
+      <div class="modal-summary">
+        Applied transfer learning using a <strong>ResNet-50</strong> backbone (pretrained on ImageNet) to classify chest X-ray images into 3 categories. Implemented class activation mapping (CAM) to produce interpretable heatmaps, making the model's decisions transparent — a critical requirement in medical AI.
+      </div>
+      <div class="modal-section-label">Notebook Preview</div>
+      <div class="notebook-viewer">
+        <div class="notebook-toolbar">
+          <div class="nb-dot red"></div><div class="nb-dot yellow"></div><div class="nb-dot green"></div>
+          <span class="nb-filename">chest_xray_resnet.ipynb</span>
+        </div>
+        <div class="nb-cell">
+          <div class="nb-cell-label">In [3] — Model Definition</div>
+          <div class="nb-code"><span class="kw">import</span> torchvision.models <span class="kw">as</span> models
+
+model = models.<span class="fn">resnet50</span>(pretrained=<span class="kw">True</span>)
+<span class="cm"># Freeze backbone layers</span>
+<span class="kw">for</span> param <span class="kw">in</span> model.<span class="fn">parameters</span>():
+    param.requires_grad = <span class="kw">False</span>
+<span class="cm"># Replace classifier head</span>
+model.fc = nn.<span class="fn">Linear</span>(model.fc.in_features, <span class="num">3</span>)</div>
+        </div>
+        <div class="output-metric-row">
+          <div class="output-metric">
+            <div class="output-metric-val">91.7%</div>
+            <div class="output-metric-lbl">Accuracy</div>
+          </div>
+          <div class="output-metric">
+            <div class="output-metric-val">0.96</div>
+            <div class="output-metric-lbl">ROC-AUC</div>
+          </div>
+          <div class="output-metric">
+            <div class="output-metric-val">0.90</div>
+            <div class="output-metric-lbl">Sensitivity</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-section-label">Key Findings</div>
+      <p style="color:var(--ink-soft);font-size:1rem;line-height:1.8">
+        Transfer learning from ImageNet proved highly effective even for greyscale medical images. The class activation maps consistently highlighted clinically relevant regions (consolidations, effusions), validating the model's reasoning process. The project highlighted important considerations around dataset bias and the ethics of deploying AI in clinical settings.
+      </p>
+      <div style="display:flex;gap:1rem;margin-top:2rem">
+        <a href="#" class="btn-view">Download .ipynb</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Project 3 -->
+<div class="modal-overlay" id="modal-proj3">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="project-tags" style="margin-bottom:0.5rem">
+          <span class="project-tag">Reinforcement Learning</span>
+          <span class="project-tag">DQN</span>
+        </div>
+        <h2 style="font-size:1.5rem;font-weight:500">Deep Q-Network Agent for CartPole</h2>
+      </div>
+      <button class="modal-close" onclick="closeModal('proj3')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section-label">Project Summary</div>
+      <div class="modal-summary">
+        Implemented a <strong>Deep Q-Network (DQN)</strong> from scratch with experience replay memory and a separate target network for training stability. The agent learned to balance the CartPole for 500 steps consistently within 200 training episodes, replicating the DeepMind approach on a classical control environment.
+      </div>
+      <div class="modal-section-label">Notebook Preview</div>
+      <div class="notebook-viewer">
+        <div class="notebook-toolbar">
+          <div class="nb-dot red"></div><div class="nb-dot yellow"></div><div class="nb-dot green"></div>
+          <span class="nb-filename">dqn_cartpole.ipynb</span>
+        </div>
+        <div class="nb-cell">
+          <div class="nb-cell-label">In [2] — DQN Architecture</div>
+          <div class="nb-code"><span class="kw">class</span> <span class="fn">DQN</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, state_dim, action_dim):
+        <span class="fn">super</span>().__init__()
+        self.net = nn.<span class="fn">Sequential</span>(
+            nn.<span class="fn">Linear</span>(state_dim, <span class="num">128</span>), nn.<span class="fn">ReLU</span>(),
+            nn.<span class="fn">Linear</span>(<span class="num">128</span>, <span class="num">128</span>),   nn.<span class="fn">ReLU</span>(),
+            nn.<span class="fn">Linear</span>(<span class="num">128</span>, action_dim)
+        )
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        <span class="kw">return</span> self.net(x)</div>
+        </div>
+        <div class="nb-output">Episode 200 | Avg Reward: 500.0 | ε: 0.01 | Loss: 0.0023</div>
+        <div class="output-metric-row">
+          <div class="output-metric">
+            <div class="output-metric-val">500</div>
+            <div class="output-metric-lbl">Max Steps</div>
+          </div>
+          <div class="output-metric">
+            <div class="output-metric-val">200</div>
+            <div class="output-metric-lbl">Episodes to solve</div>
+          </div>
+          <div class="output-metric">
+            <div class="output-metric-val">0.01</div>
+            <div class="output-metric-lbl">Final ε</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-section-label">Key Findings</div>
+      <p style="color:var(--ink-soft);font-size:1rem;line-height:1.8">
+        The target network proved essential for stable training — without it, Q-value estimates diverged. Experience replay broke temporal correlations in the data and allowed more efficient sample reuse. The project also explored hyperparameter sensitivity, finding that the replay buffer size and batch size had the most impact on training speed.
+      </p>
+      <div style="display:flex;gap:1rem;margin-top:2rem">
+        <a href="#" class="btn-view">Download .ipynb</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Project 4 -->
+<div class="modal-overlay" id="modal-proj4">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="project-tags" style="margin-bottom:0.5rem">
+          <span class="project-tag">Generative AI</span>
+          <span class="project-tag">VAE</span>
+        </div>
+        <h2 style="font-size:1.5rem;font-weight:500">Variational Autoencoder for Data Generation</h2>
+      </div>
+      <button class="modal-close" onclick="closeModal('proj4')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section-label">Project Summary</div>
+      <div class="modal-summary">
+        Designed and trained a <strong>Variational Autoencoder</strong> to model the latent distribution of a tabular health dataset. The learned 2D latent space was visualised and sampled to generate realistic synthetic data points, demonstrating potential for privacy-preserving data augmentation in regulated domains.
+      </div>
+      <div class="modal-section-label">Notebook Preview</div>
+      <div class="notebook-viewer">
+        <div class="notebook-toolbar">
+          <div class="nb-dot red"></div><div class="nb-dot yellow"></div><div class="nb-dot green"></div>
+          <span class="nb-filename">vae_data_generation.ipynb</span>
+        </div>
+        <div class="nb-cell">
+          <div class="nb-cell-label">In [4] — VAE Loss (ELBO)</div>
+          <div class="nb-code"><span class="kw">def</span> <span class="fn">vae_loss</span>(recon_x, x, mu, log_var):
+    recon_loss = F.<span class="fn">mse_loss</span>(recon_x, x, reduction=<span class="str">'sum'</span>)
+    kl_div = -<span class="num">0.5</span> * torch.<span class="fn">sum</span>(
+        <span class="num">1</span> + log_var - mu.<span class="fn">pow</span>(<span class="num">2</span>) - log_var.<span class="fn">exp</span>()
+    )
+    <span class="kw">return</span> recon_loss + kl_div</div>
+        </div>
+        <div class="output-metric-row">
+          <div class="output-metric">
+            <div class="output-metric-val">0.87</div>
+            <div class="output-metric-lbl">FID Score</div>
+          </div>
+          <div class="output-metric">
+            <div class="output-metric-val">2D</div>
+            <div class="output-metric-lbl">Latent Dims</div>
+          </div>
+          <div class="output-metric">
+            <div class="output-metric-val">50k</div>
+            <div class="output-metric-lbl">Synthetic Samples</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-section-label">Key Findings</div>
+      <p style="color:var(--ink-soft);font-size:1rem;line-height:1.8">
+        The VAE successfully learned a structured latent space with meaningful class separation, as visualised by t-SNE on the latent codes. Synthetic samples generated from the decoder were statistically similar to real data across all feature distributions. The project discussed the privacy guarantees and limitations of generative models as a data anonymisation technique.
+      </p>
+      <div style="display:flex;gap:1rem;margin-top:2rem">
+        <a href="#" class="btn-view">Download .ipynb</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Modal open/close
+  function openModal(id) {
+    const el = document.getElementById('modal-' + id);
+    if (el) {
+      el.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+  function closeModal(id) {
+    const el = document.getElementById('modal-' + id);
+    if (el) {
+      el.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+  // Click overlay to close
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+  });
+  // Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.open').forEach(el => {
+        el.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    }
+  });
+
+  // Form submit
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('.form-submit');
+    btn.textContent = 'Message sent ✓';
+    btn.style.background = '#2c6e49';
+    setTimeout(() => {
+      btn.textContent = 'Send Message →';
+      btn.style.background = '';
+      e.target.reset();
+    }, 3000);
+  }
+</script>
+</body>
+</html>
